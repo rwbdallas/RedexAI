@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dallas AI Chatbot</title>
+  <style>
+    body {
+      margin: 0;
+      background: #050505;
+      color: white;
+      font-family: Arial;
+      overflow: hidden;
+    }
 
+    .chat-box {
+      width: 60%;
+      height: 80vh;
+      margin: 50px auto;
+      padding: 20px;
+      background: #0c0c0c;
+      border-radius: 15px;
+      box-shadow: 0 0 20px red;
+      overflow-y: auto;
+    }
+
+    .input-area {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+      border: none;
+      background: #111;
+      color: white;
+      box-shadow: 0 0 10px red;
+    }
+
+    button {
+      padding: 15px 20px;
+      border: none;
+      border-radius: 8px;
+      background: red;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+    }
+
+    .msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .user {
+      background: #1a1a1a;
+      text-align: right;
+      color: #ff7777;
+    }
+
+    .bot {
+      background: #330000;
+      color: #ff4444;
+      border-left: 3px solid red;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-box" id="chatLog"></div>
+
+  <div class="input-area">
+    <input id="msgInput" placeholder="Ask Dallas AI..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      let message = document.getElementById("msgInput").value;
+      if (!message) return;
+
+      appendMessage(message, "user");
+      document.getElementById("msgInput").value = "";
+
+      const response = await fetch("http://127.0.0.1:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      appendMessage(data.reply, "bot");
+    }
+
+    function appendMessage(text, type) {
+      let box = document.getElementById("chatLog");
+      let div = document.createElement("div");
+      div.className = "msg " + type;
+      div.innerText = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
+
+</body>
+</html>
